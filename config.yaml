@@ -1,0 +1,58 @@
+# A network of four nodes connected in a line that connects Alice to Bob, Bob to Charlie and Charlie to David.
+# This network configuration has no noise.
+perfect_qdevice_cfg: &perfect_qdevice_cfg
+    num_qubits: 2
+    # coherence times (The value 0 disables decoherence)
+    T1: 0
+    T2: 0
+
+    # gate execution times
+    init_time: 0
+    single_qubit_gate_time: 0
+    two_qubit_gate_time: 0
+    measure_time: 0
+
+    # noise model
+    single_qubit_gate_depolar_prob: 0.
+    two_qubit_gate_depolar_prob: 0.
+
+stacks:
+  - name: Alice
+    qdevice_typ: generic
+    qdevice_cfg:
+      <<: *perfect_qdevice_cfg
+  - name: Bob
+    qdevice_typ: generic
+    qdevice_cfg:
+      <<: *perfect_qdevice_cfg
+  - name: Charlie
+    qdevice_typ: generic
+    qdevice_cfg:
+      <<: *perfect_qdevice_cfg
+  - name: David
+    qdevice_typ: generic
+    qdevice_cfg:
+      <<: *perfect_qdevice_cfg
+
+links:
+  - stack1: Alice
+    stack2: Bob
+    typ: perfect
+  - stack1: Bob
+    stack2: Charlie
+    typ: perfect
+  - stack1: Charlie
+    stack2: David
+    typ: perfect
+
+
+clinks:
+  - stack1: Alice
+    stack2: Bob
+    typ: instant
+  - stack1: Bob
+    stack2: Charlie
+    typ: instant
+  - stack1: Charlie
+    stack2: David
+    typ: instant
