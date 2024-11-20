@@ -1,58 +1,80 @@
 # A network of four nodes connected in a line that connects Alice to Bob, Bob to Charlie and Charlie to David.
-# This network configuration has no noise.
-perfect_qdevice_cfg: &perfect_qdevice_cfg
+
+qdevice_cfg: &qdevice_cfg
     num_qubits: 2
     # coherence times (The value 0 disables decoherence)
-    T1: 0
-    T2: 0
-
+    T1: 500_000_000
+    T2: 500_000_000
+    
     # gate execution times
-    init_time: 0
-    single_qubit_gate_time: 0
-    two_qubit_gate_time: 0
-    measure_time: 0
+    init_time: 10_000
+    single_qubit_gate_time: 10_000
+    two_qubit_gate_time: 10_000
+    measure_time: 10_000
 
     # noise model
-    single_qubit_gate_depolar_prob: 0.
-    two_qubit_gate_depolar_prob: 0.
+    single_qubit_gate_depolar_prob: 0.5
+    two_qubit_gate_depolar_prob: 0.5
 
 stacks:
   - name: Alice
     qdevice_typ: generic
     qdevice_cfg:
-      <<: *perfect_qdevice_cfg
+      <<: *qdevice_cfg
   - name: Bob
     qdevice_typ: generic
     qdevice_cfg:
-      <<: *perfect_qdevice_cfg
+      <<: *qdevice_cfg
   - name: Charlie
     qdevice_typ: generic
     qdevice_cfg:
-      <<: *perfect_qdevice_cfg
+      <<: *qdevice_cfg
   - name: David
     qdevice_typ: generic
     qdevice_cfg:
-      <<: *perfect_qdevice_cfg
+      <<: *qdevice_cfg
+
+link_cfg: &link_cfg
+  # Fidelity between the EPR pair qubits
+  fidelity: 0.97
+  # Chance for each attempt at entanglement to succeed
+  prob_success: 0.2
+  # Distance between adjacent nodes
+  length: 10
 
 links:
   - stack1: Alice
     stack2: Bob
-    typ: perfect
+    typ: depolarise
+    cfg:
+      <<: *link_cfg
   - stack1: Bob
     stack2: Charlie
-    typ: perfect
+    typ: depolarise
+    cfg:
+      <<: *link_cfg
   - stack1: Charlie
     stack2: David
-    typ: perfect
+    typ: depolarise
+    cfg:
+      <<: *link_cfg
 
 
 clinks:
   - stack1: Alice
     stack2: Bob
-    typ: instant
+    typ: default
+    cfg:
+      length: 10
+
   - stack1: Bob
     stack2: Charlie
-    typ: instant
+    typ: default
+    cfg:
+      length: 10
+
   - stack1: Charlie
     stack2: David
-    typ: instant
+    typ: default
+    cfg:
+      length: 10
